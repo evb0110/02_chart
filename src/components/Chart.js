@@ -12,7 +12,7 @@ export default function Chart({
   right,
   height,
   horizontal,
-  series=[]
+  series
 }) {
   var sortedSerie = serie.slice(0);
 
@@ -34,7 +34,7 @@ export default function Chart({
           backgroundColor: color,
           opacity: item / max + 0.05,
           zIndex: item,
-          height: height ? null : size + '%',
+          height: horizontal ? undefined : size + '%',
           right: right ? right(item, sortedSerie) : null,
           width: horizontal ? size + '%' : null,
         };

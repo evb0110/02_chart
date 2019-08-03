@@ -32,9 +32,21 @@ export default class App extends Component {
     const serieLength = 5;
 
     let data = new Array(series).fill(new Array(serieLength).fill(0));
-    data = data.map(serie => serie.map(item => getRandomInt(0, 20)));
+    data = data.map(serie => serie.map(_ => getRandomInt(0, 20)));
 
     this.setState({ data });
+  }
+
+  makeArgs(serie, serieIndex, max) {
+    const { colors, labels } = this.state;
+    return {
+      serie,
+      serieIndex,
+      compareNumbers,
+      labels,
+      colors,
+      max,
+    };
   }
 
   render() {
@@ -51,98 +63,61 @@ export default class App extends Component {
     return (
       <section>
         <div className="Charts">
-          {data.map((serie, serieIndex) => (
-            <Chart
-              serie={serie}
-              serieIndex={serieIndex}
-              compareNumbers={compareNumbers}
-              labels={labels}
-              colors={colors}
-              max={max}
-              classType=""
-            />
-          ))}
-        </div>
-
-        <div className="Charts">
           {data.map((serie, serieIndex) => {
-            var sortedSerie = serie.slice(0),
-              sum;
-
-            sum = serie.reduce((carry, current) => carry + current, 0);
-            sortedSerie.sort(compareNumbers);
-
-            return (
-              <Chart
-                serie={serie}
-                serieIndex={serieIndex}
-                compareNumbers={compareNumbers}
-                labels={labels}
-                colors={colors}
-                max={max}
-                sum={sum}
-                classType="stacked"
-              />
-            );
+            const args = this.makeArgs(serie, serieIndex, max);
+            return <Chart {...args} classType="" />;
           })}
         </div>
 
         <div className="Charts">
           {data.map((serie, serieIndex) => {
-            var sortedSerie = serie.slice(0);
+            const sum = serie.reduce((carry, current) => carry + current, 0);
+            const args = this.makeArgs(serie, serieIndex, max);
+            return <Chart {...args} sum={sum} classType="stacked" />;
+          })}
+        </div>
+
+        <div className="Charts">
+          {data.map((serie, serieIndex) => {
+            const sortedSerie = serie.slice(0);
 
             sortedSerie.sort(compareNumbers);
             const right = item =>
               (sortedSerie.indexOf(item) / (serie.length + 1)) * 100 + '%';
+            const args = this.makeArgs(serie, serieIndex, max);
 
-            return (
-              <Chart
-                serie={serie}
-                serieIndex={serieIndex}
-                compareNumbers={compareNumbers}
-                labels={labels}
-                colors={colors}
-                max={max}
-                classType="layered"
-                right={right}
-              />
-            );
+            return <Chart {...args} classType="layered" right={right} />;
           })}
         </div>
 
         <div className="Charts horizontal">
           {data.map((serie, serieIndex) => {
+            const args = this.makeArgs(serie, serieIndex, max);
+
             return (
               <Chart
-              serie={serie}
-              series={series}
-              serieIndex={serieIndex}
-              compareNumbers={compareNumbers}
-              labels={labels}
-              colors={colors}
-              max={max}
-              classType=""
-              height="auto"
-              horizontal={true}
-            />
-            )
+                {...args}
+                series={series}
+                classType=""
+                height="auto"
+                horizontal={true}
+              />
+            );
           })}
         </div>
 
         <div className="Legend">
-          {labels.map((label, labelIndex) => {
-            return (
-              <div>
-                <span
-                  className="Legend--color"
-                  style={{
-                    backgroundColor: colors[labelIndex % colors.length],
-                  }}
-                />
-                <span className="Legend--label">{label}</span>
-              </div>
-            );
-          })}
+          {labels.map((label, labelIndex) => (
+            <div>
+              <span
+                className="Legend--color"
+                style={{
+                  backgroundColor: colors[labelIndex % colors.length],
+                }}
+              />
+              <span className="Legend--label">{label}</span>
+            </div>
+          ))}
         </div>
       </section>
     );

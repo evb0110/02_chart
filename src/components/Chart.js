@@ -12,11 +12,16 @@ export default function Chart({
   right,
   height,
   horizontal,
-  series
+  series,
 }) {
-  var sortedSerie = serie.slice(0);
-
+  const sortedSerie = serie.slice(0);
   sortedSerie.sort(compareNumbers);
+
+  const labelSource = horizontal ? series : labels;
+  const rightSize = item => (right ? right(item, sortedSerie) : null);
+  const width = size => (horizontal ? size + '%' : null);
+  const heightSize = size => (horizontal ? undefined : size + '%');
+  const sizeFunc = item => (item / (sum ? sum : max)) * 100;
 
   return (
     <div
@@ -24,19 +29,17 @@ export default function Chart({
       key={serieIndex}
       style={{ height: height ? height : 250 }}
     >
-      <label>{horizontal ? series[serieIndex] : labels[serieIndex]}</label>
+      <label>{labelSource[serieIndex]}</label>
       {serie.map((item, itemIndex) => {
-        var color = colors[itemIndex],
-          style,
-          size = (item / (sum ? sum : max)) * 100;
-
-        style = {
+        const color = colors[itemIndex];
+        const size = sizeFunc(item);
+        const style = {
           backgroundColor: color,
           opacity: item / max + 0.05,
           zIndex: item,
-          height: horizontal ? undefined : size + '%',
-          right: right ? right(item, sortedSerie) : null,
-          width: horizontal ? size + '%' : null,
+          height: heightSize(size),
+          right: rightSize,
+          width: width(size),
         };
 
         return (

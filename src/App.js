@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import Chart from './components/Chart';
-import Chart1 from './components/Chart1';
 
 import './css/main.css';
 
@@ -90,7 +89,10 @@ export default class App extends Component {
 
         <div className="Charts">
           {data.map((serie, serieIndex) => {
-            const right = (item, sortedSerie) =>
+            var sortedSerie = serie.slice(0);
+
+            sortedSerie.sort(compareNumbers);
+            const right = item =>
               (sortedSerie.indexOf(item) / (serie.length + 1)) * 100 + '%';
 
             return (
@@ -111,17 +113,19 @@ export default class App extends Component {
         <div className="Charts horizontal">
           {data.map((serie, serieIndex) => {
             return (
-              <Chart1
-                serie={serie}
-                serieIndex={serieIndex}
-                compareNumbers={compareNumbers}
-                labels={labels}
-                colors={colors}
-                max={max}
-                classType=""
-                series={series}
-              />
-            );
+              <Chart
+              serie={serie}
+              series={series}
+              serieIndex={serieIndex}
+              compareNumbers={compareNumbers}
+              labels={labels}
+              colors={colors}
+              max={max}
+              classType=""
+              height="auto"
+              horizontal={true}
+            />
+            )
           })}
         </div>
 
